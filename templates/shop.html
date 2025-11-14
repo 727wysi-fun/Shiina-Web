@@ -1,0 +1,506 @@
+<#include "assets/base.html">
+
+<!-- Cropperjs библиотека -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+<div class="container mb-4">
+    <div class="card rounded">
+        <div class="bg-gradient rounded position-relative"
+            style="background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);">
+            <div class="row p-4 position-relative">
+                <div class="col-12 col-md-3 d-flex justify-content-center align-items-center mb-3 mb-md-0">
+                    <div class="position-relative">
+                        <i class="fa-solid fa-store shiina-doc-font-size" style="color: white; font-size: 5rem;"></i>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-9 d-flex flex-column justify-content-center text-white">
+                    <h2 class="display-5 py-3 fw-bold mb-2">
+                        Shop
+                    </h2>
+                    <p class="lead mb-0">
+                        Discover exclusive items and cosmetics for your profile
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body bg-body px-4 py-4">
+            <!-- Balance Section -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card bg-gradient border-0 mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="card-title mb-1">Your Balance</h5>
+                                    <p class="card-text text-white-50 mb-0">Coins available for purchases</p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <h3 class="display-6 fw-bold mb-0">
+                                        <i class="fa-solid fa-coins"></i> <span id="userBalance">${balance}</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shop Items Section -->
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mb-4">Available Items</h4>
+                    
+                    <!-- Custom Badge Item -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fa-solid fa-star"></i> Custom Badge
+                                        </h5>
+                                        <span class="badge bg-dark fs-6">300 <i class="fa-solid fa-coins"></i></span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text text-muted mb-3">
+                                        Create a custom badge with your own image and description to display on your profile!
+                                    </p>
+                                    
+                                    <!-- Badge Upload Form -->
+                                    <form id="badgePurchaseForm" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                        <div class="mb-3">
+                                            <label for="badgeName" class="form-label">Badge Name</label>
+                                            <input type="text" class="form-control" id="badgeName" name="badge_name" placeholder="e.g., Pro Player" required maxlength="32">
+                                            <div class="invalid-feedback">
+                                                Please provide a badge name.
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="badgeDescription" class="form-label">Description</label>
+                                            <textarea class="form-control" id="badgeDescription" name="badge_description" placeholder="What does this badge represent?" rows="2" required maxlength="256"></textarea>
+                                            <div class="invalid-feedback">
+                                                Please provide a description.
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="badgeImage" class="form-label">Badge Image</label>
+                                            <input type="file" class="form-control" id="badgeImage" name="badge_image" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+                                            <small class="text-muted d-block mt-1">Supported formats: PNG, JPG, GIF, WebP (Max 2MB). Aspect ratio: 16:9</small>
+                                            <div class="invalid-feedback">
+                                                Please select an image file.
+                                            </div>
+                                        </div>
+
+                                        <div id="badgePreview" style="display: none;" class="mb-3">
+                                            <small class="text-muted">Preview (16:9):</small>
+                                            <div class="mt-2">
+                                                <img id="previewImage" src="" alt="Preview" style="max-width: 100%; max-height: 169px; border-radius: 4px;">
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="formMessage" class="alert d-none" role="alert"></div>
+                                        
+                                        <button type="submit" class="btn btn-primary w-100" id="purchaseBtn">
+                                            <i class="fa-solid fa-shopping-cart"></i> Purchase Badge - 300 Coins
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="alert alert-info h-100 d-flex align-items-center">
+                                <div>
+                                    <h5 class="alert-heading mb-3">
+                                        <i class="fa-solid fa-info-circle"></i> How it works
+                                    </h5>
+                                    <ul class="mb-0">
+                                        <li>Upload a custom badge image (preferably square, 64x64px recommended)</li>
+                                        <li>Give your badge a unique name and description</li>
+                                        <li>Your badge will appear on your profile!</li>
+                                        <li>Cost: <strong>300 coins</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supporter Plans Section -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <h4 class="mb-4">
+                                <i class="fa-solid fa-heart"></i> Supporter Plans
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- 30 Days Plan -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-0 shadow-sm h-100 d-flex flex-column">
+                                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fa-solid fa-moon"></i> Supporter 30
+                                        </h5>
+                                        <span class="badge bg-dark fs-6">300 <i class="fa-solid fa-coins"></i></span>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h3 class="text-center mb-3" style="color: #667eea;">30 Days</h3>
+                                    <p class="card-text text-muted mb-3">
+                                        Get 30 days of supporter status! Access exclusive features and support the community.
+                                    </p>
+                                    <ul class="list-unstyled mb-4 flex-grow-1">
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> 30-day supporter badge</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Profile customization options</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Priority support</li>
+                                    </ul>
+                                    <button type="button" class="btn btn-primary w-100" onclick="purchaseSupporterPlan(30, 300)">
+                                        <i class="fa-solid fa-shopping-cart"></i> Purchase - 300 Coins
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 60 Days Plan -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-0 shadow-sm h-100 d-flex flex-column position-relative">
+                                <div class="position-absolute top-0 start-50 translate-middle-x">
+                                    <span class="badge bg-warning text-dark"><i class="fa-solid fa-star"></i> Best Value</span>
+                                </div>
+                                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fa-solid fa-sun"></i> Supporter 60
+                                        </h5>
+                                        <span class="badge bg-dark fs-6">500 <i class="fa-solid fa-coins"></i></span>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h3 class="text-center mb-3" style="color: #f5576c;">60 Days</h3>
+                                    <p class="card-text text-muted mb-3">
+                                        Get 60 days of supporter status! Our most popular option with great value.
+                                    </p>
+                                    <ul class="list-unstyled mb-4 flex-grow-1">
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> 60-day supporter badge</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Enhanced profile customization</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Priority support</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Exclusive benefits</li>
+                                    </ul>
+                                    <button type="button" class="btn btn-primary w-100" onclick="purchaseSupporterPlan(60, 500)">
+                                        <i class="fa-solid fa-shopping-cart"></i> Purchase - 500 Coins
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 90 Days Plan -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-0 shadow-sm h-100 d-flex flex-column">
+                                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fa-solid fa-star"></i> Supporter 90
+                                        </h5>
+                                        <span class="badge bg-dark fs-6">800 <i class="fa-solid fa-coins"></i></span>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h3 class="text-center mb-3" style="color: #fee140;">90 Days</h3>
+                                    <p class="card-text text-muted mb-3">
+                                        Get 90 days of supporter status! Maximum savings with extended benefits.
+                                    </p>
+                                    <ul class="list-unstyled mb-4 flex-grow-1">
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> 90-day supporter badge</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Full profile customization</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Priority support 24/7</li>
+                                        <li class="mb-2"><i class="fa-solid fa-check text-success"></i> Premium exclusive benefits</li>
+                                    </ul>
+                                    <button type="button" class="btn btn-primary w-100" onclick="purchaseSupporterPlan(90, 800)">
+                                        <i class="fa-solid fa-shopping-cart"></i> Purchase - 800 Coins
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for cropping image -->
+<div class="modal fade" id="cropImageModal" tabindex="-1" aria-labelledby="cropImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropImageModalLabel">Crop Badge Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div style="max-height: 400px; overflow: auto;">
+                    <img id="cropperImage" src="" alt="Cropper" style="max-width: 100%;">
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">Tip: Drag the edges and corners to select the desired area, then click "Apply Crop"</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="applyCropBtn">
+                    <i class="fa-solid fa-crop"></i> Apply Crop
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<#include "assets/footer.html">
+
+<#noparse>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== IMAGE CROP FUNCTIONALITY =====
+    const badgeImageInput = document.getElementById('badgeImage');
+    const previewImage = document.getElementById('previewImage');
+    const badgePreviewDiv = document.getElementById('badgePreview');
+    
+    let cropper = null;
+    let croppedImageBlob = null;
+
+    // Preview image when file is selected
+    if (badgeImageInput) {
+        badgeImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Show preview
+                    previewImage.src = event.target.result;
+                    badgePreviewDiv.style.display = 'block';
+                    
+                    // Prepare image for cropping
+                    const cropperImageElement = document.getElementById('cropperImage');
+                    cropperImageElement.src = event.target.result;
+                    
+                    // Destroy old cropper if exists
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    // Initialize new cropper
+                    cropper = new Cropper(cropperImageElement, {
+                        aspectRatio: 16 / 9,
+                        viewMode: 1,
+                        autoCropArea: 0.9,
+                        responsive: true,
+                        restore: true,
+                        guides: true,
+                        center: true,
+                        highlight: true,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: true,
+                        background: true,
+                    });
+                    
+                    // Open crop modal
+                    new bootstrap.Modal(document.getElementById('cropImageModal')).show();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle apply crop
+        document.getElementById('applyCropBtn').addEventListener('click', function() {
+            if (!cropper) return;
+            
+            const canvas = cropper.getCroppedCanvas({
+                maxWidth: 1024,
+                maxHeight: 576,
+                fillColor: '#fff',
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+            
+            canvas.toBlob(function(blob) {
+                croppedImageBlob = blob;
+                // Update preview
+                previewImage.src = canvas.toDataURL();
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('cropImageModal')).hide();
+                showSuccessNotification('Image cropped successfully');
+            }, 'image/png');
+        });
+    }
+
+    // ===== BADGE PURCHASE FORM =====
+    document.getElementById('badgePurchaseForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Validate form
+        if (!document.getElementById('badgePurchaseForm').checkValidity()) {
+            document.getElementById('badgePurchaseForm').classList.add('was-validated');
+            return;
+        }
+
+        // Check if image was cropped
+        if (!croppedImageBlob && !badgeImageInput.files[0]) {
+            showErrorNotification('Please select and crop an image');
+            return;
+        }
+
+        // Use cropped image if available, otherwise use original
+        const imageBlob = croppedImageBlob || badgeImageInput.files[0];
+
+        // Check file size (max 2MB)
+        if (imageBlob.size > 2 * 1024 * 1024) {
+            showErrorNotification('File size must not exceed 2MB');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('badge_name', document.getElementById('badgeName').value);
+        formData.append('badge_description', document.getElementById('badgeDescription').value);
+        formData.append('badge_image', imageBlob, 'badge.png');
+        
+        const messageDiv = document.getElementById('formMessage');
+        const purchaseBtn = document.getElementById('purchaseBtn');
+        
+        // Disable button and show loading state
+        purchaseBtn.disabled = true;
+        purchaseBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+        
+        try {
+            const response = await fetch('/shop/purchase/badge', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                // Show success message
+                messageDiv.className = 'alert alert-success';
+                messageDiv.innerHTML = `
+                    <i class="fa-solid fa-check-circle"></i>
+                    <strong>Success!</strong> Your badge has been purchased! Your new balance: <strong>${data.new_balance} coins</strong>
+                `;
+                messageDiv.classList.remove('d-none');
+                
+                // Update balance display
+                document.getElementById('userBalance').textContent = data.new_balance;
+                
+                // Reset form
+                document.getElementById('badgePurchaseForm').reset();
+                document.getElementById('badgePurchaseForm').classList.remove('was-validated');
+                badgePreviewDiv.style.display = 'none';
+                croppedImageBlob = null;
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                
+                // Scroll to message
+                messageDiv.scrollIntoView({ behavior: 'smooth' });
+                
+                // Auto-reload after 2 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                // Show error message
+                messageDiv.className = 'alert alert-danger';
+                messageDiv.innerHTML = `
+                    <i class="fa-solid fa-exclamation-circle"></i>
+                    <strong>Error!</strong> ${data.error || 'An error occurred while purchasing the badge.'}
+                `;
+                messageDiv.classList.remove('d-none');
+            }
+        } catch (error) {
+            messageDiv.className = 'alert alert-danger';
+            messageDiv.innerHTML = `
+                <i class="fa-solid fa-exclamation-circle"></i>
+                <strong>Error!</strong> ${error.message}
+            `;
+            messageDiv.classList.remove('d-none');
+        } finally {
+            purchaseBtn.disabled = false;
+            purchaseBtn.innerHTML = '<i class="fa-solid fa-shopping-cart"></i> Purchase Badge - 300 Coins';
+        }
+    });
+
+    // Notification helpers
+    function showSuccessNotification(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.innerHTML = '<i class="fa-solid fa-check-circle me-2"></i>' + message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(alertDiv);
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    function showErrorNotification(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.innerHTML = '<i class="fa-solid fa-exclamation-circle me-2"></i>' + message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(alertDiv);
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    // Cleanup modals
+    const cropImageModal = document.getElementById('cropImageModal');
+    if (cropImageModal) {
+        cropImageModal.addEventListener('hidden.bs.modal', function() {
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+        });
+    }
+
+    // ===== SUPPORTER PURCHASE =====
+    window.purchaseSupporterPlan = async function(days, cost) {
+        // Confirm purchase
+        if (!confirm(`Purchase ${days} days of Supporter status for ${cost} coins?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/shop/purchase/supporter?days=${days}`, {
+                method: 'POST'
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showSuccessNotification(`${days}-day Supporter status purchased! New balance: ${data.new_balance} coins`);
+                
+                // Update balance display
+                document.getElementById('userBalance').textContent = data.new_balance;
+
+                // Reload page after 2 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                showErrorNotification(data.error || 'An error occurred while purchasing supporter status.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showErrorNotification(error.message || 'An error occurred while purchasing supporter status.');
+        }
+    };
+});
+</script>
+</#noparse>
+

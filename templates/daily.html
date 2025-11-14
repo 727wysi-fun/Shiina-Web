@@ -1,0 +1,189 @@
+<#include "assets/base.html">
+
+<div class="container">
+    <#if noActiveChallenge??>
+        <div class="alert alert-info mt-3">
+            <i class="fa-solid fa-info-circle"></i> No active daily challenge at the moment.
+        </div>
+    </#if>
+    
+    <div class="card mt-3">
+        <div class="card-body">
+            <h1 class="mb-4">Daily Challenge</h1>
+            
+
+            <#if noActiveChallenge??>
+                <div class="alert alert-info">
+                    <i class="fa-solid fa-info-circle"></i> No active daily challenge at the moment.
+                </div>
+            <#else>
+                <div class="row">
+                    <!-- Beatmap Info Section -->
+                    <div class="col-12 col-lg-4">
+                        <div class="card h-100">
+                            <img src="https://assets.ppy.sh/beatmaps/${beatmap.setId?c}/covers/cover.jpg?1650681317" 
+                                 class="card-img-top" 
+                                 alt="Beatmap thumbnail">
+                            <div class="card-body">
+                                <h5 class="card-title">${beatmap.title}</h5>
+                                <p class="card-text text-muted">
+                                    ${beatmap.artist} // ${beatmap.creator}
+                                </p>
+                                <p class="card-text">
+                                    <span class="badge bg-primary">${beatmap.version}</span>
+                                    <span class="badge bg-secondary ms-2">★${beatmap.diff?string("0.00")}</span>
+                                </p>
+                                
+                                <!-- Map Stats -->
+                                <div class="row g-2 mt-2">
+                                    <div class="col-3">
+                                        <div class="p-2 border rounded text-center">
+                                            <small class="d-block text-muted">CS</small>
+                                            <span>${beatmap.cs?string("0.0")}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="p-2 border rounded text-center">
+                                            <small class="d-block text-muted">AR</small>
+                                            <span>${beatmap.ar?string("0.0")}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="p-2 border rounded text-center">
+                                            <small class="d-block text-muted">OD</small>
+                                            <span>${beatmap.od?string("0.0")}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="p-2 border rounded text-center">
+                                            <small class="d-block text-muted">HP</small>
+                                            <span>${beatmap.hp?string("0.0")}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-grid gap-2 mt-4">
+                                    <a href="/b/${mapId?c}" class="btn btn-outline-primary">
+                                        <i class="fas fa-eye"></i> View Beatmap Page
+                                    </a>
+                                    <a href="https://catboy.best/d/${beatmap.setId?c}" class="btn btn-outline-success">
+                                        <i class="fas fa-download"></i> Download Beatmap
+                                    </a>
+                                </div>
+
+                                <!-- Time Remaining -->
+                                <div class="mt-4">
+                                    <h6>Time Remaining:</h6>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 45%"></div>
+                                    </div>
+                                    <small class="text-muted" id="timeRemaining">Loading...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Section -->
+                    <div class="col-12 col-lg-8">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Leaderboard</h5>
+                                
+                                <div class="list-group list-group-flush">
+                                    <#list beatmap.scores as score>
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <span class="fw-bold">#${score?index + 1}</span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <img src="${avatarServer}/${score.userId?c}" 
+                                                         alt="Avatar" 
+                                                         class="rounded" 
+                                                         width="40" height="40">
+                                                </div>
+                                                <div class="col">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="fw-medium">${score.user.name}</span>
+                                                        <img src="/img/flags/${score.user.country}.svg" 
+                                                             alt="${score.user.country}" 
+                                                             class="ms-2" 
+                                                             width="20" height="15">
+                                                        <#if score.mods?? && score.mods?size gt 0>
+                                                            <span class="badge bg-warning bg-opacity-25 text-warning ms-2">${score.mods?join(", ")}</span>
+                                                        </#if>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        Score: ${score.score?c} • PP: ${score.pp?string("0.00")}pp
+                                                    </small>
+                                                </div>
+                                                <div class="col-auto text-end">
+                                                    <#assign height=24>
+                                                    <#include "/freemarker/gradeconvert.ftl">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <#else>
+                                        <div class="text-center py-5">
+                                            <i class="fa-solid fa-trophy text-muted mb-3" style="font-size: 3rem;"></i>
+                                            <h5>No scores yet</h5>
+                                            <p class="text-muted">Be the first to set a score!</p>
+                                        </div>
+                                    </#list>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </#if>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateTimeRemaining() {
+    // Get end time from template variable (ISO 8601 format with UTC timezone)
+    let endTimeStr = '${challengeEndTime}'.trim();
+    
+    // Debug logging
+    console.log('End time string:', endTimeStr);
+    
+    if (!endTimeStr) {
+        console.error('Challenge end time not provided');
+        return;
+    }
+    
+    // Parse ISO 8601 datetime with timezone - JavaScript Date constructor handles this correctly
+    let endTime = new Date(endTimeStr).getTime();
+    
+    if (isNaN(endTime)) {
+        console.error('Failed to parse end time:', endTimeStr);
+        return;
+    }
+    
+    const now = new Date().getTime();
+    const timeLeft = endTime - now;
+    
+    console.log('End time:', new Date(endTime), 'Now:', new Date(now), 'Time left ms:', timeLeft);
+    
+    if (timeLeft <= 0) {
+        document.getElementById('timeRemaining').textContent = 'Challenge ended';
+        return;
+    }
+    
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    
+    const progressPercent = (1 - (timeLeft / (24 * 60 * 60 * 1000))) * 100;
+    document.querySelector('.progress-bar').style.width = progressPercent + '%';
+    
+    document.getElementById('timeRemaining').textContent = 
+        hours + 'h ' + minutes + 'm remaining';
+}
+
+// Update immediately and every minute
+updateTimeRemaining();
+setInterval(updateTimeRemaining, 60000);
+
+</script>

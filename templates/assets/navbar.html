@@ -21,6 +21,9 @@
           <li class="nav-item">
             <a class="nav-link <#if actNav == 4>active</#if>" aria-current="page" href="/clans">Clans</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link <#if actNav == 6>active</#if>" aria-current="page" href="/daily">Daily Challenge</a>
+          </li>
           <#list navbarItems as item>
           <#if item.loggedInOnly>
              <#if user??>
@@ -99,4 +102,14 @@
       </div>
     </div>
   </nav>
+
+  <!-- Emergency Status Banner -->
+  <div class="alert alert-danger mb-0" style="border-radius: 0; border-left: none; border-right: none;">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center gap-2">
+        <strong>⚠️ Аварийное состояние:</strong>
+        <span>Сайт находится в режиме технического обслуживания. Некоторые функции могут работать нестабильно.</span>
+      </div>
+    </div>
+  </div>
   

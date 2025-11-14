@@ -69,6 +69,18 @@
                 </#if>
 
                  <!-- Moderator Section (If Applicable) -->
+                 <#if userPriv?seq_contains("DEV")>
+                 <li class="mt-4">
+                     <h6 class="sidebar-header text-uppercase">Developer</h6>
+                     <hr class="sidebar-divider my-1">
+                 </li>
+                 <li class="nav-item">
+                     <a href="/ap/badges" class="nav-link <#if actNav == 30>active</#if>">
+                         <i class="fas fa-medal shiina-ap-icon"></i> Значки
+                     </a>
+                 </li>
+                 </#if>
+
                  <#if userPriv?seq_contains("MODERATOR")>
                  <li class="mt-4">
                      <h6 class="sidebar-header text-uppercase">Moderation</h6>

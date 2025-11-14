@@ -6,8 +6,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
-import com.google.gson.Gson;
-
 import dev.osunolimits.api.UserQuery;
 import dev.osunolimits.api.UserStatusQuery;
 import dev.osunolimits.main.App;
@@ -34,10 +32,7 @@ import spark.Response;
 public class User extends Shiina {
 
     public User() {
-        gson = new Gson();
     }
-
-    private final Gson gson;
     private final String ACH_QUERY = "SELECT `achievements`.`file`, `achievements`.`id`, `achievements`.`name`, `achievements`.`desc` FROM `user_achievements` LEFT JOIN `achievements` ON `user_achievements`.`achid` = `achievements`.`id` WHERE `user_achievements`.`userid` = ? AND (`achievements`.`file` LIKE ? OR `achievements`.`file` LIKE 'all%');";
 
     @Override
@@ -110,8 +105,13 @@ public class User extends Shiina {
 
         }
 
-        UserInfoObject userInfo = gson.fromJson(App.jedisPool.get("shiina:user:" + id), UserInfoObject.class);
-
+        // Ensure user info is in cache
+        dev.osunolimits.modules.utils.UserInfoCache userInfoCache = new dev.osunolimits.modules.utils.UserInfoCache();
+        userInfoCache.reloadUserIfNotPresent(id);
+        
+        // Get user info from cache
+        UserInfoObject userInfo = new UserInfoObject(id);
+        
         UserStatusQuery userStatusQuery = new UserStatusQuery();
         UserStatus userStatus = userStatusQuery.getUserStatus(id);
 
@@ -163,6 +163,39 @@ public class User extends Shiina {
             groups.add(ShiinaSupporterBadge.getInstance().getGroup());
         }
 
+        // Загружаем бейджи пользователя
+        ArrayList<Badge> userBadges = new ArrayList<>();
+        try {
+            ResultSet badgeRs = shiina.mysql.Query(
+                "SELECT b.id, b.name, b.description, b.image_url FROM badges b " +
+                "INNER JOIN user_badges ub ON b.id = ub.badge_id " +
+                "WHERE ub.user_id = ? " +
+                "ORDER BY ub.assigned_at DESC",
+                id
+            );
+            String badgeUrl = App.env.get("BADGEURL");
+            while (badgeRs.next()) {
+                Badge badge = new Badge();
+                badge.setId(badgeRs.getInt("id"));
+                badge.setName(badgeRs.getString("name"));
+                badge.setDescription(badgeRs.getString("description"));
+                // Используем правильный URL из конфига
+                String fileName = badgeRs.getString("image_url");
+                if (fileName != null) {
+                    // Если это полный URL, берём только имя файла
+                    if (fileName.contains("/")) {
+                        fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+                    }
+                    badge.setIcon(badgeUrl + fileName);
+                }
+                userBadges.add(badge);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        shiina.data.put("userBadges", userBadges);
+
         shiina.data.put("groups", userInfo.getGroups());
         shiina.data.put("achievements", achievements);
         shiina.data.put("achievementGroups", ShiinaAchievementsSorter.achievements);
@@ -197,6 +230,14 @@ public class User extends Shiina {
         private String file;
         private String name;
         private String desc;
+    }
+
+    @Data
+    public class Badge {
+        private int id;
+        private String name;
+        private String description;
+        private String icon;
     }
 
 }

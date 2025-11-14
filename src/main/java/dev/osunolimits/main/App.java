@@ -12,6 +12,7 @@ import dev.osunolimits.main.init.StartupSetupCronTask;
 import dev.osunolimits.main.init.StartupSetupDataTask;
 import dev.osunolimits.main.init.StartupSetupMarketTask;
 import dev.osunolimits.main.init.StartupSetupRedisTask;
+import dev.osunolimits.main.init.StartupUserCacheTask;
 import dev.osunolimits.main.init.StartupTextTask;
 import dev.osunolimits.main.init.StartupWebServerTask;
 import dev.osunolimits.main.init.cfg.AutorunSQLTask;
@@ -40,6 +41,9 @@ import dev.osunolimits.plugins.PluginLoader;
 import dev.osunolimits.plugins.models.NavbarItem;
 import dev.osunolimits.routes.ap.api.PubSubHandler;
 import dev.osunolimits.routes.ap.api.RecoverAccount;
+import dev.osunolimits.routes.ap.api.BadgesHandler;
+import dev.osunolimits.routes.ap.badges.ManageBadges;
+import dev.osunolimits.routes.badges.ServeBadge;
 import dev.osunolimits.routes.ap.get.Audit;
 import dev.osunolimits.routes.ap.get.Bancho;
 import dev.osunolimits.routes.ap.get.ChatExplorer;
@@ -65,6 +69,7 @@ import dev.osunolimits.routes.ap.post.ChangeSetting;
 import dev.osunolimits.routes.ap.post.ChangeTheme;
 import dev.osunolimits.routes.ap.post.DenyMapRequest;
 import dev.osunolimits.routes.ap.post.HandleMapStatusUpdate;
+import dev.osunolimits.routes.ap.post.HandleBadgeUpload;
 import dev.osunolimits.routes.ap.post.ProcessManageGroup;
 import dev.osunolimits.routes.api.get.GetComments;
 import dev.osunolimits.routes.api.get.GetFirstPlaces;
@@ -73,6 +78,7 @@ import dev.osunolimits.routes.api.get.GetPlayerScores;
 import dev.osunolimits.routes.api.get.GetRankCache;
 import dev.osunolimits.routes.api.get.Health;
 import dev.osunolimits.routes.api.get.Search;
+import dev.osunolimits.routes.api.get.SearchUsers;
 import dev.osunolimits.routes.api.get.auth.GetLastDayPlayerAdmin;
 import dev.osunolimits.routes.api.get.auth.HandleBeatmapFavorite;
 import dev.osunolimits.routes.api.get.auth.HandleClanAction;
@@ -83,6 +89,7 @@ import dev.osunolimits.routes.api.get.image.GetBanner;
 import dev.osunolimits.routes.get.Beatmap;
 import dev.osunolimits.routes.get.Beatmaps;
 import dev.osunolimits.routes.get.Bot;
+import dev.osunolimits.routes.get.DailyChallenge;
 import dev.osunolimits.routes.get.Leaderboard;
 import dev.osunolimits.routes.get.OnBoarding;
 import dev.osunolimits.routes.get.User;
@@ -165,6 +172,7 @@ public class App {
         StartupTaskRunner.register(new StartupLogConfigTask());
         StartupTaskRunner.register(new StartupDatabaseTask());
         StartupTaskRunner.register(new StartupSetupRedisTask());
+        StartupTaskRunner.register(new StartupUserCacheTask());
         StartupTaskRunner.register(new AutorunSQLTask());
 
         StartupTaskRunner.register(new StartupInitCustomizations());
@@ -187,6 +195,9 @@ public class App {
         WebServer.get("/", new Home());
         WebServer.get("/beatmaps", new Beatmaps());
         WebServer.get("/leaderboard", new Leaderboard());
+        WebServer.get("/ap/badges", new ManageBadges());
+        WebServer.get("/badges/:filename", new ServeBadge());
+        WebServer.get("/daily", new DailyChallenge());
 
         WebServer.get("/clans", new Clans());
         WebServer.get("/clan/:id", new Clan());
@@ -225,6 +236,7 @@ public class App {
         WebServer.post("/register", new HandleRegister());
 
         WebServer.post("/post/comment", new HandleComment());
+
         WebServer.notFound(new NotFound());
 
         WebServer.get("/api/v1/get_ap_players", new GetLastDayPlayerAdmin());
@@ -234,6 +246,7 @@ public class App {
         WebServer.get("/api/v1/get_rank_cache", new GetRankCache());
         WebServer.get("/api/v1/get_playcount_graph", new GetPlaycountGraph());
         WebServer.get("/api/v1/search", new Search());
+        WebServer.get("/api/v1/search_users", new SearchUsers());
 
         WebServer.get("/api/v1/onboarding", new HandleOnBoarding());
         WebServer.get("/api/v1/manage_cl", new HandleClanAction());
@@ -274,6 +287,9 @@ public class App {
         WebServer.post("/ap/settings/update", new ChangeSetting());
         WebServer.post("/ap/maprequests/deny", new DenyMapRequest());
         WebServer.post("/ap/mapranking", new HandleMapStatusUpdate());
+        WebServer.post("/ap/api/badges", new BadgesHandler());
+        WebServer.get("/ap/api/badges", new BadgesHandler());
+        WebServer.post("/ap/badges/upload", new HandleBadgeUpload());
 
         WebServer.get("/banner/:id", new GetBanner());
 
