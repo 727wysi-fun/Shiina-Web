@@ -92,6 +92,7 @@ import dev.osunolimits.routes.get.Bot;
 import dev.osunolimits.routes.get.DailyChallenge;
 import dev.osunolimits.routes.get.Leaderboard;
 import dev.osunolimits.routes.get.OnBoarding;
+import dev.osunolimits.routes.get.Shop;
 import dev.osunolimits.routes.get.User;
 import dev.osunolimits.routes.get.UserScore;
 import dev.osunolimits.routes.get.auth.Login;
@@ -117,6 +118,8 @@ import dev.osunolimits.routes.post.HandleLogin;
 import dev.osunolimits.routes.post.HandleLogout;
 import dev.osunolimits.routes.post.HandleRecovery;
 import dev.osunolimits.routes.post.HandleRegister;
+import dev.osunolimits.routes.post.HandleShopBadgePurchase;
+import dev.osunolimits.routes.post.HandleShopSupporterPurchase;
 import dev.osunolimits.routes.post.settings.auth.HandleTokenDeletion;
 import dev.osunolimits.routes.post.settings.customization.HandleAvatarChange;
 import dev.osunolimits.routes.post.settings.customization.HandleBannerChange;
@@ -198,6 +201,7 @@ public class App {
         WebServer.get("/ap/badges", new ManageBadges());
         WebServer.get("/badges/:filename", new ServeBadge());
         WebServer.get("/daily", new DailyChallenge());
+        WebServer.get("/shop", new Shop());
 
         WebServer.get("/clans", new Clans());
         WebServer.get("/clan/:id", new Clan());
@@ -237,6 +241,8 @@ public class App {
 
         WebServer.post("/post/comment", new HandleComment());
 
+        WebServer.post("/shop/purchase/badge", new HandleShopBadgePurchase());
+        WebServer.post("/shop/purchase/supporter", new HandleShopSupporterPurchase());
         WebServer.notFound(new NotFound());
 
         WebServer.get("/api/v1/get_ap_players", new GetLastDayPlayerAdmin());
